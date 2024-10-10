@@ -1,0 +1,80 @@
+name: Publish
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: esbuild-pug
+          path: dist
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - uses: actions/download-artifact@v4
+        with:
+          name: esbuild-pug
+          path: dist
+      - run: npm ci
+      - run: npm run coverage
+
+  lint:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - uses: actions/download-artifact@v4
+        with:
+          name: esbuild-pug
+          path: dist
+      - run: npm ci
+      - run: npm run lint
+
+  publish:
+    needs: [ build, test, lint ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+          cache: 'npm'
+      - uses: actions/download-artifact@v4
+        with:
+          name: esbuild-pug
+          path: dist
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+      - run: npm ci
+      - name: Publish to NPM
+        working-directory: ./
+        run: npm publish && npm dist-tag add esbuild-pug@${{ steps.package-version.outputs.current-version }} stable
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

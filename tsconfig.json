@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "lib": [ "es2022" ],
+    "removeComments": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "verbatimModuleSyntax": true,
+    "strict": true,
+    "outDir": "./dist",
+    "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noErrorTruncation": true,
+    "exactOptionalPropertyTypes": true
+  },
+  "include": [ "src/**/*" ],
+  "exclude": [ "node_modules" ]
+}
